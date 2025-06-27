@@ -30,7 +30,7 @@ public class UserService {
         return  mapToUserResponse(userRepository.save(user1));
     }
 
-    public UserResponse updateUser(UserRequest user, Long id) {
+    public UserResponse updateUser(UserRequest user, String  id) {
         User existingUser = userRepository.findById(id).orElse(null);
         if (existingUser != null) {
             existingUser.setFirstName(user.firstName());
@@ -47,7 +47,7 @@ public class UserService {
 
     }
 
-    public UserResponse findUserById(Long id) {
+    public UserResponse findUserById(String id) {
          Optional<User> user = userRepository.findById(id);
         return user.map(this::mapToUserResponse).orElse(null);
     }
