@@ -1,0 +1,22 @@
+scrape_configs:
+  - job_name: 'product'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 3s
+    static_configs:
+      - targets: ['host.docker.internal:4002']
+        labels:
+          application: 'product'
+  - job_name: 'user'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 3s
+    static_configs:
+      - targets: ['host.docker.internal:4001']
+        labels:
+          application: 'user'
+  - job_name: 'order'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 3s
+    static_configs:
+      - targets: ['host.docker.internal:4003']
+        labels:
+          application: 'order'

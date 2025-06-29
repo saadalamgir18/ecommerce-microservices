@@ -3,11 +3,14 @@ package com.ecommerce.order.service;
 
 import com.ecommerce.order.dto.CartItemRequest;
 import com.ecommerce.order.dto.CartItemResponse;
+import com.ecommerce.order.dto.ProductResponse;
+import com.ecommerce.order.dto.UserResponse;
 import com.ecommerce.order.model.CartItem;
 import com.ecommerce.order.repository.CartItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,33 +22,42 @@ import java.util.stream.Collectors;
 public class CartItemService {
     private final CartItemRepository cartItemRepository;
 
+    private final RestClient productRestClient;
+    private final RestClient userRestClient;
+
     public boolean addToCart(CartItemRequest cartItem, Long userId) {
-//        Product product = productRepository.findById(cartItem.productId())
-//                .filter(p -> p.getStockQuantity() >= cartItem.quantity())
-//                .orElse(null);
-//
-//        User user = userRepository.findById(Long.valueOf(userId)).orElse(null);
-//
-//        if (product == null || user == null) return false;
+        ProductResponse product = productRestClient.get()
+                .uri("/api/products/{productId}", cartItem.productId())
+                .retrieve()
+                .body(ProductResponse.class);
+        if (product == null ) return false;
+        if (product.stockQuantity() < cartItem.quantity()) return false;
+
+        UserResponse userResponse = userRestClient.get()
+                .uri("/api/users/{userID}", userId)
+                .retrieve()
+                .body(UserResponse.class);
+
+        if (userResponse == null) return false;
 
         CartItem existingItem = cartItemRepository.findByUserIdAndProductId(userId, cartItem.productId());
 
         int quantity = cartItem.quantity();
-//        BigDecimal price = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+        BigDecimal price = product.price().multiply(BigDecimal.valueOf(quantity));
 
         if (existingItem != null) {
             int newQty = existingItem.getQuantity() + quantity;
             existingItem.setQuantity(newQty);
-//            existingItem.setPrice(product.getPrice().multiply(BigDecimal.valueOf(newQty)));
+            existingItem.setPrice(product.price().multiply(BigDecimal.valueOf(newQty)));
 
-            existingItem.setPrice(BigDecimal.valueOf(100000));
+//            existingItem.setPrice(BigDecimal.valueOf(100000));
 
             cartItemRepository.save(existingItem);
         } else {
             CartItem newItem = CartItem.builder()
                     .productId(1L)
                     .quantity(quantity)
-//                    .price(price)
+                    .price(price)
                     .price(BigDecimal.valueOf(100000))
                     .userId(userId)
                     .build();

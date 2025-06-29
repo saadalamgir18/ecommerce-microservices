@@ -30,6 +30,7 @@ public class ProductService {
     }
 
     public ProductResponse findById(Long id) {
+        System.out.println("checking product");
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
         return mapToProductResponse(product);
