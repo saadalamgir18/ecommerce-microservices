@@ -25,11 +25,12 @@ public class CartItemService {
     private final RestClient productRestClient;
     private final RestClient userRestClient;
 
-    public boolean addToCart(CartItemRequest cartItem, Long userId) {
+    public boolean addToCart(CartItemRequest cartItem, String userId) {
         ProductResponse product = productRestClient.get()
                 .uri("/api/products/{productId}", cartItem.productId())
                 .retrieve()
                 .body(ProductResponse.class);
+
         if (product == null ) return false;
         if (product.stockQuantity() < cartItem.quantity()) return false;
 
@@ -37,6 +38,8 @@ public class CartItemService {
                 .uri("/api/users/{userID}", userId)
                 .retrieve()
                 .body(UserResponse.class);
+
+        System.out.println("userId: " + userResponse.id());
 
         if (userResponse == null) return false;
 
@@ -68,7 +71,7 @@ public class CartItemService {
     }
 
     @Transactional
-    public boolean deleteItemFromCart(Long productId, Long userId) {
+    public boolean deleteItemFromCart(Long productId, String userId) {
 
         CartItem cartItem =  cartItemRepository.findByUserIdAndProductId(userId, productId);
 
@@ -83,7 +86,7 @@ public class CartItemService {
     }
 
 
-    public List<CartItemResponse> findAll(Long userId) {
+    public List<CartItemResponse> findAll(String userId) {
 
         List<CartItem> cartItems = cartItemRepository.findByUserId(userId);
 
@@ -96,7 +99,7 @@ public class CartItemService {
 
     }
 
-    public void clearCart(Long userId) {
+    public void clearCart(String userId) {
         cartItemRepository.deleteByUserId(userId);
     }
 }

@@ -49,6 +49,7 @@ public class UserService {
 
     public UserResponse findUserById(String id) {
          Optional<User> user = userRepository.findById(id);
+        System.out.println("user: " + user.isPresent() );
         return user.map(this::mapToUserResponse).orElse(null);
     }
 

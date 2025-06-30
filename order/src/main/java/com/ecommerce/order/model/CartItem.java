@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 public class CartItem extends BaseModel{
-    private Long userId;
+    private String userId;
     private Long productId;
     private Integer quantity;
     private BigDecimal price;

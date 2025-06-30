@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 public class Order extends BaseModel {
 
-    private Long userId;
+    private String userId;
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)

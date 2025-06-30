@@ -24,7 +24,7 @@ public class OrderService {
     private final CartItemService cartItemService;
 
     @Transactional
-    public Optional<OrderResponse> createOrder(Long userId) {
+    public Optional<OrderResponse> createOrder(String userId) {
         List<CartItemResponse> cartItems = cartItemService.findAll(userId);
         if (cartItems.isEmpty()) return Optional.empty();
 //
@@ -47,7 +47,7 @@ public class OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private Order buildOrder(Long userId, BigDecimal totalPrice, List<CartItemResponse> cartItems) {
+    private Order buildOrder(String userId, BigDecimal totalPrice, List<CartItemResponse> cartItems) {
         Order order = Order.builder()
                 .status(OrderStatus.CONFIRMED)
                 .totalAmount(totalPrice)
